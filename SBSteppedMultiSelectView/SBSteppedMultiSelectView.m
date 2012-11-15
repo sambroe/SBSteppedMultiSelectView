@@ -23,6 +23,8 @@
 @property (nonatomic, assign) NSUInteger indexForLastHandle;
 @property (nonatomic, readonly) CGPoint centerPointForFirstHandle;
 @property (nonatomic, readonly) CGPoint centerPointForLastHandle;
+@property (nonatomic, assign) CGPoint initialTouchPoint;
+@property (nonatomic, assign) CGRect selectorFrameAtInitialTouch;
 
 -(void)setup;
 -(CGRect)frameForStepAtIndex:(NSUInteger)index;
@@ -116,6 +118,7 @@
     self.isTrackingFirstHandle = NO;
     self.isTrackingLastHandle = NO;
     self.isTrackingSelector = NO;
+    self.initialTouchPoint = point;
     
     if (CGRectContainsPoint(_firstHandleView.frame, point))
     {
@@ -128,6 +131,7 @@
     else if (_selectorView && CGRectContainsPoint(_selectorView.frame, point))
     {
         self.isTrackingSelector = YES;
+        self.selectorFrameAtInitialTouch = _selectorView.frame;
     }
 }
 
@@ -382,6 +386,11 @@
 //                
 //                [_firstHandleView setCenter:CGPointMake(self.centerPointForFirstHandle.x, point.y + firstHandleYOffset)];
 //                [_lastHandleView setCenter:CGPointMake(self.centerPointForLastHandle.x, point.y + lastHandleYOffset)];
+                
+                CGFloat yDiff = _selectorFrameAtInitialTouch.origin.y - _initialTouchPoint.y;
+                
+                [_selectorView setFrame:CGRectMake(0.0, point.y + yDiff, CGRectGetWidth(_selectorView.frame), CGRectGetHeight(_selectorView.frame))];
+                
             }
             
             if (_selectorContainerView.subviews.count)
