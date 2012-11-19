@@ -56,6 +56,8 @@
         
         [self setClipsToBounds:NO];
         [_handlesContainerView setClipsToBounds:NO];
+        
+//        [self setBackgroundColor:[UIColor redColor]];
     }
     
     return self;
@@ -343,7 +345,6 @@
                 
                 [_firstHandleView setFrame:frame];
                 
-                
                 if (index != _indexForFirstHandle)
                 {
                     [_firstHandleView removeFromSuperview];
@@ -353,6 +354,8 @@
                     
                     _indexForFirstHandle = index;
                 }
+                
+                [_selectorView setFrame:self.frameForSelector];
             }
             else if (_isTrackingLastHandle)
             {
@@ -378,23 +381,65 @@
                     
                     _indexForLastHandle = index;
                 }
+                
+                [_selectorView setFrame:self.frameForSelector];
             }
             else if (_isTrackingSelector)
             {
-//                CGFloat firstHandleYOffset = self.centerPointForFirstHandle.y - point.y;
-//                CGFloat lastHandleYOffset = self.centerPointForLastHandle.y - point.y;
-//                
-//                [_firstHandleView setCenter:CGPointMake(self.centerPointForFirstHandle.x, point.y + firstHandleYOffset)];
-//                [_lastHandleView setCenter:CGPointMake(self.centerPointForLastHandle.x, point.y + lastHandleYOffset)];
-                
                 CGFloat yDiff = _selectorFrameAtInitialTouch.origin.y - _initialTouchPoint.y;
                 
-                [_selectorView setFrame:CGRectMake(0.0, point.y + yDiff, CGRectGetWidth(_selectorView.frame), CGRectGetHeight(_selectorView.frame))];
+//                frame = CGRectMake(handlePoint.x, handlePoint.y, CGRectGetWidth(_firstHandleView.frame), CGRectGetHeight(_firstHandleView.frame));
+//                index = [self indexForPoint:CGPointMake(roundf(CGRectGetMidX(frame)), roundf(CGRectGetMidY(frame)))];
+//                
+//                if (index != _indexForFirstHandle)
+//                {
+//                    [_firstHandleView removeFromSuperview];
+//                    self.firstHandleView = [_dataSource steppedMultiSelectView:self viewForFirstHandleWithIndex:index];
+//                    [_firstHandleView setFrame:frame];
+//                    [_handlesContainerView insertSubview:_firstHandleView atIndex:0];
+//                    
+//                    _indexForFirstHandle = index;
+//                }
+//                
+//                frame = CGRectMake(handlePoint.x, handlePoint.y, CGRectGetWidth(_lastHandleView.frame), CGRectGetHeight(_lastHandleView.frame));
+//                index = [self indexForPoint:CGPointMake(roundf(CGRectGetMidX(frame)), roundf(CGRectGetMidY(frame)))];
+//                
+//                if (index != _indexForLastHandle)
+//                {
+//                    [_lastHandleView removeFromSuperview];
+//                    self.lastHandleView = [_dataSource steppedMultiSelectView:self viewForLastHandleWithIndex:index];
+//                    [_lastHandleView setFrame:frame];
+//                    [_handlesContainerView insertSubview:_lastHandleView atIndex:1];
+//                    
+//                    _indexForLastHandle = index;
+//                }
                 
+                frame = CGRectMake(0.0, point.y + yDiff, CGRectGetWidth(_selectorView.frame), _selectedRange.length * floorf(CGRectGetHeight(self.frame)/_steps));
+                
+                if (!CGRectContainsRect(self.bounds, frame))
+                {
+                    NSLog(@"%@, %@, %f", NSStringFromCGRect(frame), NSStringFromCGRect(CGRectIntersection(self.bounds, frame)), point.y + yDiff);
+                    frame = CGRectIntersection(self.bounds, frame);
+                    
+                }
+                
+                
+                if (CGRectContainsRect(self.frame, frame))
+                {
+                    
+                }
+                else
+                {
+
+                }
+                
+                [_selectorView setFrame:frame];
+                [_firstHandleView setFrame:CGRectMake(CGRectGetMinX(_firstHandleView.frame), CGRectGetMinY(_selectorView.frame) - (CGRectGetHeight(_firstHandleView.frame) * 0.5), CGRectGetWidth(_firstHandleView.frame), CGRectGetHeight(_firstHandleView.frame))];
+                [_lastHandleView setFrame:CGRectMake(CGRectGetMinX(_lastHandleView.frame), CGRectGetMaxY(_selectorView.frame) - (CGRectGetHeight(_lastHandleView.frame) * 0.5), CGRectGetWidth(_lastHandleView.frame), CGRectGetHeight(_lastHandleView.frame))];
             }
             
-            if (_selectorContainerView.subviews.count)
-                [_selectorContainerView.subviews[0] setFrame:self.frameForSelector];
+//            if (_selectorContainerView.subviews.count)
+//                [_selectorContainerView.subviews[0] setFrame:self.frameForSelector];
         }
     }
     
